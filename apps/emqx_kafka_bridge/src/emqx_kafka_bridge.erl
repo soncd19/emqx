@@ -26,7 +26,7 @@
 
 %% Hooks functions
 
--export([on_client_connected/4, on_client_disconnected/3]).
+-export([on_client_connected/4, on_client_disconnected/3, on_client_authenticate/3, on_client_check_acl/5]).
 
 % -export([on_client_subscribe/4, on_client_unsubscribe/4]).
 
@@ -42,7 +42,9 @@ load(Env) ->
     emqx:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]),
     emqx:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
     emqx:hook('message.delivered', fun ?MODULE:on_message_delivered/3, [Env]),
-    emqx:hook('message.acked', fun ?MODULE:on_message_acked/3, [Env]).
+    emqx:hook('message.acked', fun ?MODULE:on_message_acked/3, [Env]),
+    emqx:hook('client.authenticate', fun ?MODULE:on_client_authenticate/3, [Env]),
+    emqx:hook('client.check_acl', fun ?MODULE:on_client_check_acl/5, [Env]).
 
 on_client_connected(#{client_id := ClientId, username := Username}, _ConnAck, _ConnInfo, _Env) ->
     io:format("client ~s connected, connack: ~w~n", [ClientId, _ConnAck]),
@@ -55,6 +57,15 @@ on_client_connected(#{client_id := ClientId, username := Username}, _ConnAck, _C
     io:format("client connected"),
     produce_kafka_payload(Payload),
     ok.
+    
+on_client_authenticate(_ClientInfo = #{clientid := ClientId}, Result, _Env) ->
+    io:format("Client(~s) authenticate, Result:~n~p~n", [ClientId, Result]),
+    {ok, Result}.
+
+on_client_check_acl(_ClientInfo = #{clientid := ClientId}, Topic, PubSub, Result, _Env) ->
+    io:format("Client(~s) check_acl, PubSub:~p, Topic:~p, Result:~p~n",
+              [ClientId, PubSub, Topic, Result]),
+    {ok, Result}.
 
 on_client_disconnected(#{client_id := ClientId, username := Username}, _Reason, _Env) ->
     % io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
@@ -100,7 +111,7 @@ ekaf_init(_Env) ->
     application:set_env(ekaf, ekaf_buffer_ttl, 10),
     application:set_env(ekaf, ekaf_max_downtime_buffer_size, 5),
     % {ok, _} = application:ensure_all_started(kafkamocker),
-    % {ok, _} = application:ensure_all_started(gproc),
+    {ok, _} = application:ensure_all_started(gproc),
     % {ok, _} = application:ensure_all_started(ranch),
     {ok, _} = application:ensure_all_started(ekaf),
     io:format("start Test ekaf ~s~n",[ok]).
@@ -157,6 +168,8 @@ format_payload(Message) ->
 unload() ->
     emqx:unhook('client.connected', fun ?MODULE:on_client_connected/4),
     emqx:unhook('client.disconnected', fun ?MODULE:on_client_disconnected/3),
+    emqx:unhook('client.authenticate', {?MODULE, on_client_authenticate}),
+    emqx:unhook('client.check_acl',    {?MODULE, on_client_check_acl}),
     % emqx:unhook('client.subscribe', fun ?MODULE:on_client_subscribe/4),
     % emqx:unhook('client.unsubscribe', fun ?MODULE:on_client_unsubscribe/4),
     % emqx:unhook('session.subscribed', fun ?MODULE:on_session_subscribed/4),
