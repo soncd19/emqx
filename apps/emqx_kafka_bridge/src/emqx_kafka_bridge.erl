@@ -180,7 +180,7 @@ unload() ->
 
 produce_kafka_payload(Topic, Message) ->
     %%Topic = ekaf_get_topic(),
-    io:format("Publish message to kafka with topic ~s~n", [Topic]),
+    %%io:format("Publish message to kafka with topic ~s~n", [Topic]),
     {ok, MessageBody} = emqx_json:safe_encode(Message),
     % MessageBody64 = base64:encode_to_string(MessageBody),
     Payload = iolist_to_binary(MessageBody),
