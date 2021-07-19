@@ -3,8 +3,6 @@
 
 This is a plugin for the EMQX broker that sends all messages received by the broker to kafka.
 
-   注意：插件目前适配的是emqx 3.0，不适配3.1,3.2这些版本了
-
 ## Build the EMQX broker
 
 1. Clone emqx-relx project
@@ -12,13 +10,13 @@ This is a plugin for the EMQX broker that sends all messages received by the bro
    We need to clone the EMQX project [GITHUB](https://github.com/emqx/emqx-rel)
 
 ```shell
-  git clone https://github.com/emqx/emqx-rel.git
+  git clone https://github.com/emqx/emqx.git
 ```
 
 2. Add EMQ Kafka bridge as a DEPS
    Adding EMQ kafka bridge as a dependency in the Makefile.
 
-   1. search for `DEPS += $(foreach dep,$(OUR_APPS),$(call app_name,$(dep)))` 
+   1. search for `DEPS += $(foreach dep,$(OUR_APPS),$(call app_name,$(dep)))`
       add the following line before the above lines
       > DEPS += emqx_kafka_bridge
 
@@ -71,7 +69,7 @@ kafka.payloadtopic = Processing
 
 ```
 
-Start the EMQ broker and load the plugin 
+Start the EMQ broker and load the plugin
 -----------------
 1) cd emqx-relx/_rel/emqx
 2) ./bin/emqx start
@@ -86,7 +84,7 @@ The following should be received by your kafka consumer :
   {"topic":"yourtopic", "message":[yourmessage]}
 This is the format in which kafka will receive the MQTT messages
 
-If Kafka consumer shows no messages even after publishing to EMQX - ACL makes the plugin fail, so please remove all the ACL related code to ensure it runs properly. We will soon push the updated (Working) code to the repository. 
+If Kafka consumer shows no messages even after publishing to EMQX - ACL makes the plugin fail, so please remove all the ACL related code to ensure it runs properly. We will soon push the updated (Working) code to the repository.
 
 ## License
 
