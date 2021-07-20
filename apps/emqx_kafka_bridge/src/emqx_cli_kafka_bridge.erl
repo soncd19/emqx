@@ -1,4 +1,4 @@
-%% Copyright (c) 2018 EMQ Technologies Co., Ltd. All Rights Reserved.
+%% Copyright (c) 2020 Arad ITC Co., Ltd. All Rights Reserved.
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -12,21 +12,12 @@
 %% See the License for the specific language governing permissions and
 %% limitations under the License.
 
--module(emqx_time).
+-module(emqx_cli_kafka_bridge).
 
--export([seed/0, now_secs/0, now_secs/1, now_ms/0, now_ms/1]).
+-export([cmd/1]).
 
-seed() ->
-    rand:seed(exsplus, erlang:timestamp()).
+cmd(["arg1", "arg2"]) ->
+    emqx_cli:print("ok");
 
-now_secs() ->
-    erlang:system_time(second).
-
-now_secs({MegaSecs, Secs, _MicroSecs}) ->
-    MegaSecs * 1000000 + Secs.
-
-now_ms() ->
-    erlang:system_time(millisecond).
-
-now_ms({MegaSecs, Secs, MicroSecs}) ->
-     (MegaSecs * 1000000 + Secs) * 1000 + round(MicroSecs/1000).
+cmd(_) ->
+    emqx_cli:usage([{"cmd arg1 arg2", "cmd demo"}]).
