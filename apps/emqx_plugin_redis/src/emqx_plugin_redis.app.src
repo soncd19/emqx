@@ -1,0 +1,13 @@
+{application, emqx_plugin_redis,
+ [{description, "EMQ X Plugin Redis"},
+  {vsn, "git"},
+  {modules, []},
+  {registered, [emqx_plugin_redis_sup]},
+  {applications, [kernel,stdlib,eredis,eredis_cluster,ecpool]},
+  {mod, {emqx_plugin_redis_app,[]}},
+  {env, []},
+  {licenses, ["Apache-2.0"]},
+  {maintainers, ["SonCD <caodinhsonbk202@gmail.com>"]},
+  {links, [{"Homepage", "https://emqx.io/"}
+          ]}
+ ]}.

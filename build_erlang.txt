@@ -3,7 +3,7 @@
 3. tar -xvzf otp_src_*.tar.gz
 4. sudo chmod -R 777 otp_src_*
 5. cd otp_src_*
-6. sudo ./configure
+6. ./otp_build autoconf && ./configure
 7. make
 8. sudo make install
 9. erl --version
