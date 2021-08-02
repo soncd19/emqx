@@ -1,4 +1,4 @@
-1. download erlang version 21
+1. download erlang version 21.3
 2. sudo apt-get install libncurses5-dev libncursesw5-dev libssl-dev
 3. tar -xvzf otp_src_*.tar.gz
 4. sudo chmod -R 777 otp_src_*

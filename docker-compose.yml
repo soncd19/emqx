@@ -1,0 +1,40 @@
+version: '3.3'
+services:
+  emqx1:
+    image: io.emqx/emqx
+    environment:
+      - "EMQX_NAME=emqx"
+      - "EMQX_HOST=node1.emqx.io"
+      - "EMQX_CLUSTER__DISCOVERY=static"
+      - "EMQX_CLUSTER__STATIC__SEEDS=emqx@node1.emqx.io, emqx@node2.emqx.io"
+    networks:
+      emqx-bridge:
+        aliases:
+          - node1.emqx.io
+
+  emqx2:
+    image: io.emqx/emqx
+    environment:
+      - "EMQX_NAME=emqx"
+      - "EMQX_HOST=node2.emqx.io"
+      - "EMQX_CLUSTER__DISCOVERY=static"
+      - "EMQX_CLUSTER__STATIC__SEEDS=emqx@node1.emqx.io, emqx@node2.emqx.io"
+    networks:
+      emqx-bridge:
+        aliases:
+          - node2.emqx.io
+
+  haproxy:
+    build:
+      context: HAProxy
+      dockerfile: Dockerfile
+    container_name: haproxy
+    hostname: haproxy
+    ports:
+    - "18083:18083"
+    - "1883:1883"
+    networks:
+      - emqx-bridge
+networks:
+  emqx-bridge:
+    driver: bridge
